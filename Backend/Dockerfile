@@ -1,18 +1,18 @@
 # Use Maven image to build
-FROM maven:3.8-openjdk-8-slim AS builder
+FROM maven:3.9-eclipse-temurin-17 AS builder
 
 WORKDIR /app
 
 # Copy pom.xml first for dependency caching
 COPY pom.xml .
-RUN mvn dependency:go-offline -B
+RUN ./mvnw dependency:go-offline -B || mvn dependency:go-offline -B
 
 # Copy source and build
 COPY src ./src
-RUN mvn clean package -DskipTests
+RUN ./mvnw clean package -DskipTests || mvn clean package -DskipTests
 
 # Final image with Java runtime
-FROM openjdk:8-jre-alpine
+FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
