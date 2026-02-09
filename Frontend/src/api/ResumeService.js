@@ -43,3 +43,4 @@ export const getInterviewQuestions = async () => {
   const response = await axiosInstance.get("/api/v1/interview/questions");
   return response.data;
 };
+
