@@ -9,7 +9,7 @@ import Resume from "../components/Resume";
 import { useAuth } from "../context/AuthContext";
 
 const GenerateResume = () => {
-  const { selectedTemplate } = useAuth();
+  const { selectedTemplate, user } = useAuth();
   const [data, setData] = useState({
     personalInformation: {
       fullName: "Deepak Saini",
@@ -288,10 +288,13 @@ const GenerateResume = () => {
               try {
                 const formatArray = (arr) => arr.map(item => Object.values(item).join(" | ")).join("\n");
                 
+                // Use logged-in user's email or fallback to form email
+                const userEmail = user?.email || data.personalInformation?.email || "anonymous@example.com";
+                
                 const resumeData = {
-                  userEmail: data.personalInformation?.email || "anonymous@example.com",
+                  userEmail: userEmail,
                   fullName: data.personalInformation?.fullName || "",
-                  email: data.personalInformation?.email || "",
+                  email: userEmail,
                   phone: data.personalInformation?.phoneNumber || "",
                   location: data.personalInformation?.location || "",
                   summary: data.summary || "",

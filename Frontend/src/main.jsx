@@ -10,6 +10,7 @@ import GenerateResume from "./pages/GenerateResume";
 import InterviewPrep from "./pages/InterviewPrep";
 import CoverLetter from "./pages/CoverLetter";
 import CareerInsights from "./pages/CareerInsights";
+import Profile from "./pages/Profile";
 import { AuthProvider } from "./context/AuthContext";
 import { Toaster } from "react-hot-toast";
 
@@ -27,6 +28,7 @@ createRoot(document.getElementById("root")).render(
           <Route path="interview-prep" element={<InterviewPrep />} />
           <Route path="cover-letter" element={<CoverLetter />} />
           <Route path="career-insights" element={<CareerInsights />} />
+          <Route path="profile" element={<Profile />} />
         </Route>
       </Routes>
     </BrowserRouter>
