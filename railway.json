@@ -3,9 +3,9 @@
   "name": "resume-ai-backend",
   "region": "europe-west4",
   "builder": "docker",
-  "dockerfilePath": "Dockerfile",
+  "dockerfilePath": "Backend/Dockerfile",
   "deploy": {
-    "startCommand": "java -jar /app/target/resume-ai-backend-0.0.1-SNAPSHOT.jar",
+    "startCommand": "java -jar Backend/target/resume-ai-backend-0.0.1-SNAPSHOT.jar",
     "healthcheckPath": "/",
     "healthcheckInterval": 10,
     "restartPolicy": "always",
