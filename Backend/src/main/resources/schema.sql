@@ -1,7 +1,3 @@
--- Create database
-CREATE DATABASE IF NOT EXISTS resume_ai;
-USE resume_ai;
-
 -- Create resumes table
 CREATE TABLE IF NOT EXISTS resumes (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -14,4 +10,4 @@ CREATE TABLE IF NOT EXISTS resumes (
 );
 
 -- Create index for faster queries
-CREATE INDEX idx_user_email ON resumes(user_email);
+CREATE INDEX IF NOT EXISTS idx_user_email ON resumes(user_email);
