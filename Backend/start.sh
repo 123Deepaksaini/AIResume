@@ -1,2 +1,0 @@
-#!/bin/bash
-java -jar target/resume-ai-backend-0.0.1-SNAPSHOT.jar

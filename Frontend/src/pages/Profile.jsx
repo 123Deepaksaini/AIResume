@@ -2,18 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { getResumesByUserEmail, deleteResume } from "../api/ResumeService";
 import toast from "react-hot-toast";
-import { FaUser, FaTrash, FaDownload, FaEnvelope, FaCalendar, FaEye } from "react-icons/fa";
-import Resume from "../components/Resume";
-import { useSearchParams } from "react-router";
+import { FaUser, FaTrash, FaDownload, FaEnvelope, FaCalendar } from "react-icons/fa";
 import { jsPDF } from "jspdf";
 
 function Profile() {
   const { user, isAuthenticated } = useAuth();
-  const [searchParams] = useSearchParams();
   const [savedResumes, setSavedResumes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedResume, setSelectedResume] = useState(null);
-  const [showResumeModal, setShowResumeModal] = useState(false);
   const [downloadingId, setDownloadingId] = useState(null);
 
   useEffect(() => {
@@ -21,20 +16,6 @@ function Profile() {
       fetchUserResumes();
     }
   }, [isAuthenticated]);
-
-  // Check for resumeId in URL params
-  useEffect(() => {
-    if (savedResumes.length > 0) {
-      const resumeId = searchParams.get("resumeId");
-      if (resumeId) {
-        const resume = savedResumes.find(r => r.id === parseInt(resumeId));
-        if (resume) {
-          setSelectedResume(resume);
-          setShowResumeModal(true);
-        }
-      }
-    }
-  }, [savedResumes, searchParams]);
 
   const fetchUserResumes = async () => {
     try {
@@ -58,11 +39,6 @@ function Profile() {
       console.error("Error deleting resume:", error);
       toast.error("Error deleting resume");
     }
-  };
-
-  const handleViewResume = (resume) => {
-    setSelectedResume(resume);
-    setShowResumeModal(true);
   };
 
   const handleDownloadPDF = (resume) => {
@@ -219,42 +195,6 @@ function Profile() {
     }
   };
 
-  // Convert database resume format to frontend format for display
-  const convertToFrontendFormat = (dbResume) => {
-    return {
-      personalInformation: {
-        fullName: dbResume.fullName || "",
-        email: dbResume.email || "",
-        phoneNumber: dbResume.phone || "",
-        location: dbResume.location || "",
-      },
-      summary: dbResume.summary || "",
-      skills: [
-        { title: dbResume.skill1, level: "" },
-        { title: dbResume.skill2, level: "" },
-        { title: dbResume.skill3, level: "" },
-        { title: dbResume.skill4, level: "" },
-        { title: dbResume.skill5, level: "" },
-        { title: dbResume.skill6, level: "" },
-        { title: dbResume.skill7, level: "" },
-        { title: dbResume.skill8, level: "" },
-        { title: dbResume.skill9, level: "" },
-        { title: dbResume.skill10, level: "" },
-      ].filter(s => s.title),
-      experience: [
-        { company: dbResume.company1, jobTitle: dbResume.position1, duration: dbResume.duration1 },
-        { company: dbResume.company2, jobTitle: dbResume.position2, duration: dbResume.duration2 },
-      ].filter(e => e.company),
-      education: [
-        { degree: dbResume.degree1, university: dbResume.university1, graduationYear: dbResume.graduationYear1 },
-      ].filter(e => e.degree),
-      projects: [
-        { title: dbResume.project1, description: "" },
-        { title: dbResume.project2, description: "" },
-      ].filter(p => p.title),
-    };
-  };
-
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -326,14 +266,8 @@ function Profile() {
                       ) : null}
                     </p>
                   </div>
-                  {/* View, Download (PDF), Delete Buttons */}
+                  {/* Download (PDF), Delete Buttons */}
                   <div className="flex gap-2">
-                    <button
-                      onClick={() => handleViewResume(resume)}
-                      className="btn btn-info btn-sm flex-1"
-                    >
-                      <FaEye className="mr-1" /> View
-                    </button>
                     <button
                       onClick={() => handleDownloadPDF(resume)}
                       disabled={downloadingId === resume.id}
@@ -367,47 +301,6 @@ function Profile() {
           )}
         </div>
       </div>
-
-      {/* Resume View Modal */}
-      {showResumeModal && selectedResume && (
-        <div className="modal modal-open">
-          <div className="modal-box max-w-4xl max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="font-bold text-xl">Resume Preview</h3>
-              <button 
-                onClick={() => setShowResumeModal(false)}
-                className="btn btn-sm btn-circle"
-              >
-                ✕
-              </button>
-            </div>
-            <Resume 
-              data={convertToFrontendFormat(selectedResume)} 
-              template={{ id: 1, name: "Modern", category: "Modern" }}
-            />
-            <div className="modal-action">
-              <button 
-                onClick={() => handleDownloadPDF(selectedResume)}
-                disabled={downloadingId === selectedResume.id}
-                className="btn btn-success"
-              >
-                {downloadingId === selectedResume.id ? (
-                  <span className="loading loading-spinner loading-sm"></span>
-                ) : (
-                  <><FaDownload className="mr-2" /> Download PDF</>
-                )}
-              </button>
-              <button 
-                onClick={() => setShowResumeModal(false)}
-                className="btn"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-          <div className="modal-backdrop" onClick={() => setShowResumeModal(false)}></div>
-        </div>
-      )}
     </div>
   );
 }
