@@ -4,11 +4,11 @@ FROM maven:3.9-eclipse-temurin-17 AS builder
 WORKDIR /app
 
 # Copy pom.xml first for dependency caching
-COPY pom.xml .
+COPY Backend/pom.xml .
 RUN ./mvnw dependency:go-offline -B || mvn dependency:go-offline -B
 
 # Copy source and build
-COPY src ./src
+COPY Backend/src ./src
 RUN ./mvnw clean package -DskipTests || mvn clean package -DskipTests
 
 # Final image with Java runtime
