@@ -1,26 +1,26 @@
-# Use Maven image to build
+# ===== Stage 1: Build =====
 FROM maven:3.9-eclipse-temurin-17 AS builder
 
 WORKDIR /app
 
-# Copy pom.xml first for dependency caching
-COPY Backend/pom.xml .
-RUN ./mvnw dependency:go-offline -B || mvn dependency:go-offline -B
+# Copy pom.xml first (dependency cache)
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
 
-# Copy source and build
-COPY Backend/src ./src
-RUN ./mvnw clean package -DskipTests || mvn clean package -DskipTests
+# Copy source code
+COPY src ./src
 
-# Final image with Java runtime
+# Build jar
+RUN mvn clean package -DskipTests
+
+# ===== Stage 2: Runtime =====
 FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
-# Copy built jar from builder
+# Copy jar from builder
 COPY --from=builder /app/target/*.jar app.jar
 
-# Expose port
 EXPOSE 9090
 
-# Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
