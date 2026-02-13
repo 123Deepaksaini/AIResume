@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import { BrowserRouter, Route, Routes } from "react-router";
+import { BrowserRouter, Navigate, Outlet, Route, Routes } from "react-router";
 import About from "./pages/About";
 import Home from "./pages/Home";
 import Root from "./pages/Root";
@@ -12,8 +12,22 @@ import CareerInsights from "./pages/CareerInsights";
 import Profile from "./pages/Profile";
 import ResetPassword from "./pages/ResetPassword";
 import Login from "./pages/Login";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 import { Toaster } from "react-hot-toast";
+
+function ProtectedRoute() {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return <div className="p-6 text-center text-sm text-slate-600">Loading...</div>;
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <Outlet />;
+}
 
 createRoot(document.getElementById("root")).render(
   <AuthProvider>
@@ -23,14 +37,17 @@ createRoot(document.getElementById("root")).render(
         <Route path="/" element={<Root />}>
           <Route path="" element={<Home />} />
           <Route path="about" element={<About />} />
-          <Route path="services" element={<Services />} />
-          <Route path="contact" element={<Contact />} />
-          <Route path="generate-resume" element={<GenerateResume />} />
-          <Route path="interview-prep" element={<InterviewPrep />} />
-          <Route path="career-insights" element={<CareerInsights />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="reset-password" element={<ResetPassword />} />
           <Route path="login" element={<Login />} />
+          <Route path="reset-password" element={<ResetPassword />} />
+
+          <Route element={<ProtectedRoute />}>
+            <Route path="services" element={<Services />} />
+            <Route path="contact" element={<Contact />} />
+            <Route path="generate-resume" element={<GenerateResume />} />
+            <Route path="interview-prep" element={<InterviewPrep />} />
+            <Route path="career-insights" element={<CareerInsights />} />
+            <Route path="profile" element={<Profile />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>
