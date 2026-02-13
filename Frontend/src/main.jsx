@@ -11,7 +11,6 @@ import InterviewPrep from "./pages/InterviewPrep";
 import CareerInsights from "./pages/CareerInsights";
 import Profile from "./pages/Profile";
 import ResetPassword from "./pages/ResetPassword";
-import Login from "./pages/Login";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { Toaster } from "react-hot-toast";
 
@@ -23,7 +22,7 @@ function ProtectedRoute() {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/?auth=login" replace />;
   }
 
   return <Outlet />;
@@ -37,7 +36,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/" element={<Root />}>
           <Route path="" element={<Home />} />
           <Route path="about" element={<About />} />
-          <Route path="login" element={<Login />} />
+          <Route path="login" element={<Navigate to="/?auth=login" replace />} />
           <Route path="reset-password" element={<ResetPassword />} />
 
           <Route element={<ProtectedRoute />}>

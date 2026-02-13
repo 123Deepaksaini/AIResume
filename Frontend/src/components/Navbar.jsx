@@ -1,5 +1,5 @@
 ﻿import React, { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import { FaDownload, FaTrash } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
@@ -8,6 +8,7 @@ import { downloadResumePdf } from "../utils/resumePdf";
 
 function Navbar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isBright, setIsBright] = useState(() => {
     if (typeof window === "undefined") return true;
     return window.localStorage.getItem("app_theme_mode") !== "dark";
@@ -56,6 +57,14 @@ function Navbar() {
       fetchUserResumes();
     }
   }, [isAuthenticated, showProfileDropdown]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (!isAuthenticated && params.get("auth") === "login" && !showAuthModal) {
+      openAuthMode("login");
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location.pathname, location.search, isAuthenticated, showAuthModal, navigate]);
 
   useEffect(() => {
     setShowProfileDropdown(false);
