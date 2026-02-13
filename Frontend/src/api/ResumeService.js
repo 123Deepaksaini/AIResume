@@ -1,8 +1,7 @@
 import axios from "axios";
 
-// Auto-detect environment
 const isProduction = import.meta.env.PROD;
-export const baseURLL = isProduction 
+export const baseURLL = isProduction
   ? (import.meta.env.VITE_API_URL || "https://your-backend-url.onrender.com")
   : "http://localhost:9090";
 
@@ -18,7 +17,6 @@ export const generateResume = async (description) => {
   return response.data;
 };
 
-// Database operations
 export const saveResume = async (resume) => {
   const response = await axiosInstance.post("/api/v1/resume/save", resume);
   return response.data;
@@ -44,3 +42,9 @@ export const getInterviewQuestions = async () => {
   return response.data;
 };
 
+export const generateInterviewQuestionsBySkills = async (skills) => {
+  const response = await axiosInstance.post("/api/v1/interview/questions/skills", {
+    skills,
+  });
+  return response.data;
+};

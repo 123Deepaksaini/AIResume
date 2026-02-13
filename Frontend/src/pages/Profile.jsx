@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import { getResumesByUserEmail, deleteResume } from "../api/ResumeService";
+import { Link } from "react-router";
 import toast from "react-hot-toast";
 import { FaUser, FaTrash, FaDownload, FaEnvelope, FaCalendar } from "react-icons/fa";
-import { jsPDF } from "jspdf";
+import { useAuth } from "../context/AuthContext";
+import { getResumesByUserEmail, deleteResume } from "../api/ResumeService";
+import { downloadResumePdf } from "../utils/resumePdf";
 
 function Profile() {
   const { user, isAuthenticated } = useAuth();
@@ -14,6 +15,8 @@ function Profile() {
   useEffect(() => {
     if (isAuthenticated) {
       fetchUserResumes();
+    } else {
+      setLoading(false);
     }
   }, [isAuthenticated]);
 
@@ -23,7 +26,6 @@ function Profile() {
       const resumes = await getResumesByUserEmail(user.email);
       setSavedResumes(resumes);
     } catch (error) {
-      console.error("Error fetching resumes:", error);
       toast.error("Error loading resumes");
     } finally {
       setLoading(false);
@@ -34,161 +36,18 @@ function Profile() {
     try {
       await deleteResume(id);
       setSavedResumes(savedResumes.filter((r) => r.id !== id));
-      toast.success("Resume deleted!");
+      toast.success("Resume deleted");
     } catch (error) {
-      console.error("Error deleting resume:", error);
       toast.error("Error deleting resume");
     }
   };
 
-  const handleDownloadPDF = (resume) => {
+  const handleDownloadPdf = (resume) => {
     setDownloadingId(resume.id);
-    
     try {
-      const doc = new jsPDF();
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const margin = 20;
-      let y = 20;
-      
-      // Helper function to add text with word wrap
-      const addWrappedText = (text, x, yPos, maxWidth, lineHeight) => {
-        const lines = doc.splitTextToSize(text || '', maxWidth);
-        lines.forEach(line => {
-          if (yPos > 270) {
-            doc.addPage();
-            yPos = 20;
-          }
-          doc.text(line, x, yPos);
-          yPos += lineHeight;
-        });
-        return yPos;
-      };
-      
-      // Name
-      doc.setFontSize(24);
-      doc.setFont('helvetica', 'bold');
-      y = addWrappedText(resume.fullName || 'Your Name', margin, y, pageWidth - 2 * margin, 10);
-      y += 5;
-      
-      // Contact Info
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
-      let contactInfo = [];
-      if (resume.email) contactInfo.push(resume.email);
-      if (resume.phone) contactInfo.push(resume.phone);
-      if (resume.location) contactInfo.push(resume.location);
-      y = addWrappedText(contactInfo.join(' | '), margin, y, pageWidth - 2 * margin, 5);
-      y += 5;
-      
-      // Divider
-      doc.setDrawColor(79, 70, 229); // Purple color
-      doc.setLineWidth(0.5);
-      doc.line(margin, y, pageWidth - margin, y);
-      y += 10;
-      
-      // Summary
-      if (resume.summary) {
-        doc.setFontSize(14);
-        doc.setFont('helvetica', 'bold');
-        y = addWrappedText('SUMMARY', margin, y, pageWidth - 2 * margin, 7);
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        y = addWrappedText(resume.summary, margin, y, pageWidth - 2 * margin, 5);
-        y += 5;
-      }
-      
-      // Skills
-      const skills = [resume.skill1, resume.skill2, resume.skill3, resume.skill4, resume.skill5, 
-                     resume.skill6, resume.skill7, resume.skill8, resume.skill9, resume.skill10]
-                     .filter(Boolean);
-      if (skills.length > 0) {
-        doc.setFontSize(14);
-        doc.setFont('helvetica', 'bold');
-        y = addWrappedText('SKILLS', margin, y, pageWidth - 2 * margin, 7);
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        y = addWrappedText(skills.join(' • '), margin, y, pageWidth - 2 * margin, 5);
-        y += 5;
-      }
-      
-      // Experience
-      if (resume.company1 || resume.company2) {
-        doc.setFontSize(14);
-        doc.setFont('helvetica', 'bold');
-        y = addWrappedText('EXPERIENCE', margin, y, pageWidth - 2 * margin, 7);
-        
-        doc.setFontSize(10);
-        if (resume.company1) {
-          doc.setFont('helvetica', 'bold');
-          y = addWrappedText(resume.position1 || 'Position', margin, y, pageWidth - 2 * margin, 5);
-          doc.setFont('helvetica', 'normal');
-          doc.setTextColor(79, 70, 229);
-          y = addWrappedText(resume.company1, margin, y, pageWidth - 2 * margin, 5);
-          doc.setTextColor(0, 0, 0);
-          y = addWrappedText(resume.duration1 || '', margin, y, pageWidth - 2 * margin, 5);
-          y += 3;
-        }
-        if (resume.company2) {
-          doc.setFont('helvetica', 'bold');
-          y = addWrappedText(resume.position2 || 'Position', margin, y, pageWidth - 2 * margin, 5);
-          doc.setFont('helvetica', 'normal');
-          doc.setTextColor(79, 70, 229);
-          y = addWrappedText(resume.company2, margin, y, pageWidth - 2 * margin, 5);
-          doc.setTextColor(0, 0, 0);
-          y = addWrappedText(resume.duration2 || '', margin, y, pageWidth - 2 * margin, 5);
-          y += 3;
-        }
-        y += 2;
-      }
-      
-      // Education
-      if (resume.degree1) {
-        doc.setFontSize(14);
-        doc.setFont('helvetica', 'bold');
-        y = addWrappedText('EDUCATION', margin, y, pageWidth - 2 * margin, 7);
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'bold');
-        y = addWrappedText(resume.degree1, margin, y, pageWidth - 2 * margin, 5);
-        doc.setFont('helvetica', 'normal');
-        y = addWrappedText(resume.university1 || '', margin, y, pageWidth - 2 * margin, 5);
-        y = addWrappedText(resume.graduationYear1 || '', margin, y, pageWidth - 2 * margin, 5);
-        y += 5;
-      }
-      
-      // Projects
-      if (resume.project1 || resume.project2) {
-        doc.setFontSize(14);
-        doc.setFont('helvetica', 'bold');
-        y = addWrappedText('PROJECTS', margin, y, pageWidth - 2 * margin, 7);
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        if (resume.project1) {
-          y = addWrappedText('• ' + resume.project1, margin, y, pageWidth - 2 * margin, 5);
-        }
-        if (resume.project2) {
-          y = addWrappedText('• ' + resume.project2, margin, y, pageWidth - 2 * margin, 5);
-        }
-      }
-      
-      // Cover Letter
-      if (resume.coverLetter) {
-        if (y > 230) {
-          doc.addPage();
-          y = 20;
-        }
-        doc.setFontSize(14);
-        doc.setFont('helvetica', 'bold');
-        y = addWrappedText('COVER LETTER', margin, y, pageWidth - 2 * margin, 7);
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        y = addWrappedText(resume.coverLetter, margin, y, pageWidth - 2 * margin, 5);
-      }
-      
-      // Save PDF
-      doc.save(`${resume.fullName || 'resume'}_${resume.id}.pdf`);
-      toast.success("PDF downloaded!");
+      downloadResumePdf(resume, String(resume.id));
+      toast.success("PDF downloaded");
     } catch (error) {
-      console.error("Error downloading PDF:", error);
       toast.error("Error downloading PDF");
     } finally {
       setDownloadingId(null);
@@ -197,111 +56,78 @@ function Profile() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <FaUser className="text-6xl mx-auto mb-4 text-base-content/30" />
-          <h2 className="text-2xl font-bold mb-2">Please Login</h2>
-          <p className="text-base-content/60">You need to login to view your profile.</p>
+      <main className="home-surface min-h-screen flex items-center justify-center px-6 text-slate-900">
+        <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+          <FaUser className="mx-auto mb-4 text-5xl text-slate-300" />
+          <h2 className="text-2xl font-black">Please Login</h2>
+          <p className="mt-2 text-slate-600">You need to login to access your profile.</p>
         </div>
-      </div>
+      </main>
     );
   }
 
   return (
-    <div className="min-h-screen p-6">
-      <div className="max-w-6xl mx-auto">
-        {/* Profile Header */}
-        <div className="bg-base-100 rounded-lg shadow-lg p-6 mb-6">
-          <div className="flex items-center gap-6">
-            <div className="avatar placeholder">
-              <div className="bg-primary text-primary-content rounded-full w-20">
-                <span className="text-2xl">{user?.name?.charAt(0).toUpperCase()}</span>
-              </div>
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold">{user?.name}</h1>
-              <div className="flex items-center gap-2 text-base-content/60 mt-1">
-                <FaEnvelope />
-                <span>{user?.email}</span>
-              </div>
-              <div className="flex items-center gap-2 text-base-content/60 mt-1">
-                <FaCalendar />
-                <span>Member since {new Date().getFullYear()}</span>
-              </div>
-            </div>
+    <main className="home-surface min-h-screen px-6 pb-20 pt-10 text-slate-900 md:px-10">
+      <section className="mx-auto max-w-6xl rounded-3xl border border-slate-200 bg-white p-6 shadow-md md:p-8">
+        <div className="flex flex-wrap items-center justify-center gap-5 text-center">
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-sky-600 text-2xl font-black text-white">
+            {user?.name?.charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <h1 className="text-3xl font-black" style={{ fontFamily: '"Space Grotesk", "Segoe UI", sans-serif' }}>{user?.name}</h1>
+            <p className="mt-1 flex items-center justify-center gap-2 text-slate-600"><FaEnvelope className="text-xs" /> {user?.email}</p>
+            <p className="mt-1 flex items-center justify-center gap-2 text-slate-600"><FaCalendar className="text-xs" /> Member since {new Date().getFullYear()}</p>
           </div>
         </div>
+      </section>
 
-        {/* Saved Resumes Section */}
-        <div className="bg-base-100 rounded-lg shadow-lg p-6">
-          <h2 className="text-2xl font-bold mb-6">My Saved Resumes ({savedResumes.length})</h2>
+      <section className="mx-auto mt-6 max-w-6xl rounded-3xl border border-slate-200 bg-white p-6 shadow-md md:p-8">
+        <h2 className="text-center text-2xl font-black" style={{ fontFamily: '"Space Grotesk", "Segoe UI", sans-serif' }}>
+          My Saved Resumes ({savedResumes.length})
+        </h2>
 
-          {loading ? (
-            <div className="flex justify-center py-12">
-              <span className="loading loading-spinner loading-lg"></span>
-            </div>
-          ) : savedResumes.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {savedResumes.map((resume) => (
-                <div 
-                  key={resume.id} 
-                  className="bg-base-200 rounded-lg p-4 hover:shadow-lg transition-shadow"
-                >
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h3 className="font-semibold text-lg">{resume.fullName || "Untitled Resume"}</h3>
-                      <p className="text-sm text-base-content/60">
-                        {resume.createdAt ? new Date(resume.createdAt).toLocaleDateString() : "Recently saved"}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-sm text-base-content/60 mb-3">
-                    {resume.email && <p>Email: {resume.email}</p>}
-                    {resume.location && <p>Location: {resume.location}</p>}
-                    <p className="mt-2">
-                      {resume.skill1 || resume.skill2 || resume.skill3 ? (
-                        <span className="truncate">
-                          Skills: {[resume.skill1, resume.skill2, resume.skill3].filter(Boolean).join(", ")}
-                        </span>
-                      ) : null}
-                    </p>
-                  </div>
-                  {/* Download (PDF), Delete Buttons */}
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleDownloadPDF(resume)}
-                      disabled={downloadingId === resume.id}
-                      className="btn btn-success btn-sm flex-1"
-                    >
-                      {downloadingId === resume.id ? (
-                        <span className="loading loading-spinner loading-xs"></span>
-                      ) : (
-                        <><FaDownload className="mr-1" /> PDF</>
-                      )}
-                    </button>
-                    <button
-                      onClick={() => handleDeleteResume(resume.id)}
-                      className="btn btn-error btn-sm"
-                    >
-                      <FaTrash />
-                    </button>
-                  </div>
+        {loading ? (
+          <div className="flex justify-center py-10"><span className="loading loading-spinner loading-lg"></span></div>
+        ) : savedResumes.length > 0 ? (
+          <div className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {savedResumes.map((resume) => (
+              <article key={resume.id} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <h3 className="text-lg font-bold text-slate-900">{resume.fullName || "Untitled Resume"}</h3>
+                <p className="text-sm text-slate-500">
+                  {resume.createdAt ? new Date(resume.createdAt).toLocaleDateString() : "Recently saved"}
+                </p>
+
+                <div className="mt-3 text-sm text-slate-600">
+                  {resume.email && <p>Email: {resume.email}</p>}
+                  {resume.location && <p>Location: {resume.location}</p>}
+                  <p className="mt-2">Skills: {[resume.skill1, resume.skill2, resume.skill3].filter(Boolean).join(", ") || "N/A"}</p>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <FaUser className="text-6xl mx-auto mb-4 text-base-content/30" />
-              <h3 className="text-xl font-semibold mb-2">No saved resumes yet</h3>
-              <p className="text-base-content/60 mb-4">Generate your first resume and save it to see it here.</p>
-              <a href="/generate-resume" className="btn btn-primary">
-                Generate Resume
-              </a>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+
+                <div className="mt-4 flex gap-2">
+                  <button
+                    onClick={() => handleDownloadPdf(resume)}
+                    disabled={downloadingId === resume.id}
+                    className="btn flex-1 border-0 bg-emerald-600 text-white hover:bg-emerald-700"
+                  >
+                    {downloadingId === resume.id ? <span className="loading loading-spinner loading-xs"></span> : <><FaDownload className="text-xs" /> PDF</>}
+                  </button>
+                  <button onClick={() => handleDeleteResume(resume.id)} className="btn border-0 bg-pink-600 text-white hover:bg-pink-700">
+                    <FaTrash className="text-xs" />
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div className="mt-8 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
+            <FaUser className="mx-auto mb-4 text-5xl text-slate-300" />
+            <h3 className="text-xl font-bold">No saved resumes yet</h3>
+            <p className="mt-2 text-slate-600">Generate and save your first resume.</p>
+            <Link to="/generate-resume" className="btn mt-4 border-0 bg-sky-600 text-white hover:bg-sky-700">Generate Resume</Link>
+          </div>
+        )}
+      </section>
+    </main>
   );
 }
 

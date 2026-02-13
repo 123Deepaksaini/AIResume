@@ -9,10 +9,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 @RestController
 @CrossOrigin("*")
@@ -21,7 +23,7 @@ public class ResumeController {
 
     private static final Logger log = LoggerFactory.getLogger(ResumeController.class);
 
-    private ResumeService resumeService;
+    private final ResumeService resumeService;
 
     public ResumeController(ResumeService resumeService) {
         this.resumeService = resumeService;
@@ -67,42 +69,82 @@ public class ResumeController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/interview/questions")
-    public ResponseEntity<Map<String, Object>> getInterviewQuestions() {
-        Map<String, Object> response = new HashMap<>();
-
-        List<Map<String, String>> questions = Arrays.asList(
-            createQuestion("Tell me about yourself",
-                "I am a passionate software developer with 3+ years of experience in full-stack development. I specialize in React.js, Node.js, and cloud technologies. I have successfully delivered multiple projects and enjoy solving complex problems through clean, efficient code."),
-            createQuestion("What are your strengths?",
-                "My key strengths include: 1) Strong problem-solving skills, 2) Quick learning ability for new technologies, 3) Excellent communication and teamwork, 4) Attention to detail and code quality, 5) Ability to work under pressure and meet deadlines."),
-            createQuestion("What are your weaknesses?",
-                "I tend to be overly critical of my own work, which sometimes leads to spending extra time on perfection. However, I've learned to balance quality with efficiency by setting realistic timelines and getting feedback from peers early in the process."),
-            createQuestion("Why do you want to work here?",
-                "I'm excited about this opportunity because your company is at the forefront of innovation in [industry/field]. I admire your commitment to [specific company value or project], and I believe my skills in [relevant skills] would allow me to contribute meaningfully to your team's goals."),
-            createQuestion("Where do you see yourself in 5 years?",
-                "In 5 years, I see myself as a senior developer leading projects and mentoring junior developers. I want to continue growing my expertise in [specific technologies] while taking on more leadership responsibilities and contributing to the broader technical strategy of the organization."),
-            createQuestion("Why should we hire you?",
-                "You should hire me because I bring a unique combination of technical expertise, problem-solving skills, and a proven track record of delivering high-quality solutions. My experience with [relevant technologies] and my passion for continuous learning make me an ideal fit for this role."),
-            createQuestion("What is your greatest achievement?",
-                "My greatest achievement was leading the development of a real-time analytics dashboard that improved decision-making processes for a team of 50+ users. The project involved complex data processing, real-time updates, and intuitive visualizations, resulting in a 40% improvement in operational efficiency."),
-            createQuestion("How do you handle pressure?",
-                "I handle pressure by staying organized, prioritizing tasks, and maintaining clear communication with my team. I break down complex problems into manageable steps, set realistic deadlines, and don't hesitate to ask for help when needed. Regular breaks and maintaining work-life balance also help me stay productive."),
-            createQuestion("What motivates you?",
-                "I'm motivated by solving complex problems, learning new technologies, and seeing the impact of my work on users and the business. I enjoy working in collaborative environments where I can contribute ideas, learn from others, and grow both personally and professionally."),
-            createQuestion("Do you have any questions for us?",
-                "Yes, I do! 1) Can you tell me about the team I'd be working with? 2) What are the biggest challenges the team is facing right now? 3) How do you measure success for this role? 4) What opportunities are there for professional development?")
-        );
-
-        response.put("questions", questions);
-        response.put("total", questions.size());
-        return ResponseEntity.ok(response);
+    @PostMapping("/interview/questions/skills")
+    public ResponseEntity<Map<String, Object>> getInterviewQuestionsBySkills(
+            @RequestBody(required = false) Map<String, Object> requestBody
+    ) {
+        try {
+            List<String> skills = extractSkills(requestBody);
+            Map<String, Object> response = resumeService.generateInterviewQuestionsBySkills(skills);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Failed to generate skill-based interview questions", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(createFallbackResponse(extractSkills(requestBody)));
+        }
     }
 
-    private Map<String, String> createQuestion(String question, String answer) {
+    @GetMapping("/interview/questions")
+    public ResponseEntity<Map<String, Object>> getInterviewQuestions() {
+        return ResponseEntity.ok(createFallbackResponse(Collections.emptyList()));
+    }
+
+    private List<String> extractSkills(Map<String, Object> requestBody) {
+        if (requestBody == null || !requestBody.containsKey("skills")) {
+            return Collections.emptyList();
+        }
+
+        Object rawSkills = requestBody.get("skills");
+        if (!(rawSkills instanceof List<?> listSkills)) {
+            return Collections.emptyList();
+        }
+
+        List<String> parsedSkills = new ArrayList<>();
+        for (Object item : listSkills) {
+            if (item != null) {
+                String val = String.valueOf(item).trim();
+                if (!val.isBlank()) {
+                    parsedSkills.add(val);
+                }
+            }
+        }
+        return parsedSkills;
+    }
+
+    private Map<String, Object> createFallbackResponse(List<String> skills) {
+        Map<String, Object> response = new HashMap<>();
+
+        String focus = skills.isEmpty() ? "software engineering" : String.join(", ", skills);
+        List<Map<String, String>> questions = Arrays.asList(
+                createQuestion(
+                        "Walk me through your background and highlight experience with " + focus,
+                        "I have built production-focused projects and consistently improved performance, maintainability, and delivery quality. My strongest contributions are in problem solving, communication, and ownership.",
+                        "behavioral"
+                ),
+                createQuestion(
+                        "How have you applied " + focus + " in a real project?",
+                        "I start by defining clear requirements, break work into milestones, and validate outcomes with metrics. I emphasize clean implementation, testing, and stakeholder communication throughout the project lifecycle.",
+                        "technical"
+                ),
+                createQuestion(
+                        "Describe a challenging issue you solved and your approach.",
+                        "I reproduced the issue, collected logs and signals, isolated root cause, and shipped an incremental fix. Then I added monitoring and documentation to prevent recurrence.",
+                        "problem-solving"
+                )
+        );
+
+        response.put("meta", "Fallback interview prep generated");
+        response.put("skills", skills);
+        response.put("questions", questions);
+        response.put("total", questions.size());
+        return response;
+    }
+
+    private Map<String, String> createQuestion(String question, String answer, String category) {
         Map<String, String> qa = new HashMap<>();
         qa.put("question", question);
         qa.put("answer", answer);
+        qa.put("category", category);
         return qa;
     }
 }

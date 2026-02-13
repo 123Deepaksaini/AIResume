@@ -27,6 +27,11 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
+    public Map<String, Object> generateInterviewQuestionsBySkills(List<String> skills) {
+        return groqService.generateInterviewQuestions(skills);
+    }
+
+    @Override
     public Resume saveResume(Resume resume) {
         return resumeRepository.save(resume);
     }

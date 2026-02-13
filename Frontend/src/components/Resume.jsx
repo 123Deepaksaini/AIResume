@@ -1,26 +1,8 @@
 import React from "react";
 import "daisyui/dist/full.css";
 import { FaGithub, FaLinkedin, FaPhone, FaEnvelope } from "react-icons/fa";
-import { toPng } from "html-to-image";
-import { jsPDF } from "jspdf";
-import { useRef } from "react";
 
 const Resume = ({ data, template = null }) => {
-  const resumeRef = useRef(null);
-
-  const handleDownloadPdf = () => {
-    toPng(resumeRef.current, { quality: 1.0, pixelRatio: 2 })
-      .then((dataUrl) => {
-        const pdf = new jsPDF("p", "mm", "a4");
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (resumeRef.current.offsetHeight * pdfWidth) / resumeRef.current.offsetWidth;
-        pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
-        pdf.save(`${data.personalInformation.fullName}.pdf`);
-      })
-      .catch((err) => {
-        console.error("Error generating PDF", err);
-      });
-  };
 
   // Get template configuration
   const getTemplateConfig = () => {
@@ -70,18 +52,18 @@ const Resume = ({ data, template = null }) => {
       case 2: // Creative Designer - Vibrant & Modern
         return {
           name: "Creative Designer",
-          containerClass: "bg-gradient-to-br from-white to-violet-50 text-gray-800 font-sans",
-          headerClass: "text-center bg-gradient-to-r from-violet-500 to-pink-500 py-4 px-6 rounded-lg text-white mb-3",
+          containerClass: "bg-gradient-to-br from-white to-pink-50 text-gray-800 font-sans",
+          headerClass: "text-center bg-gradient-to-r from-blue-500 to-pink-500 py-4 px-6 rounded-lg text-white mb-3",
           headerBg: "",
           headerText: "text-white text-xl font-semibold",
-          sectionTitleClass: "text-sm font-bold text-violet-700 uppercase tracking-wide border-b border-violet-300 pb-1 mb-2",
+          sectionTitleClass: "text-sm font-bold text-pink-700 uppercase tracking-wide border-b border-pink-300 pb-1 mb-2",
           sectionBg: "",
-          cardClass: "bg-white/80 border border-violet-200 rounded p-2 mb-2",
-          cardTitleClass: "font-semibold text-violet-700 text-sm",
+          cardClass: "bg-white/80 border border-pink-200 rounded p-2 mb-2",
+          cardTitleClass: "font-semibold text-pink-700 text-sm",
           cardSubtitleClass: "text-pink-600 text-xs font-medium",
           cardTextClass: "text-gray-700 text-xs",
-          badgeClass: "bg-violet-100 text-violet-700 border border-violet-300 rounded px-2 py-0.5 text-xs font-medium",
-          dividerClass: "border-t border-violet-200 my-2",
+          badgeClass: "bg-pink-100 text-pink-700 border border-pink-300 rounded px-2 py-0.5 text-xs font-medium",
+          dividerClass: "border-t border-pink-200 my-2",
           listClass: "list-disc pl-4 text-gray-700 text-xs",
           linkClass: "text-pink-600 hover:text-pink-800 text-xs",
           containerPadding: "p-4",
@@ -98,7 +80,7 @@ const Resume = ({ data, template = null }) => {
           sectionBg: "",
           cardClass: "bg-gray-800 border border-gray-700 p-2 mb-2",
           cardTitleClass: "font-semibold text-emerald-400 text-sm",
-          cardSubtitleClass: "text-teal-400 text-xs font-medium",
+          cardSubtitleClass: "text-emerald-400 text-xs font-medium",
           cardTextClass: "text-gray-300 text-xs",
           badgeClass: "bg-gray-700 text-emerald-400 border border-emerald-600 rounded px-2 py-0.5 text-xs",
           dividerClass: "border-t border-gray-700 my-2",
@@ -110,20 +92,20 @@ const Resume = ({ data, template = null }) => {
       case 4: // Executive Manager - Elegant & Dark
         return {
           name: "Executive Manager",
-          containerClass: "bg-gradient-to-br from-white to-amber-50 text-gray-900 font-serif",
+          containerClass: "bg-gradient-to-br from-white to-slate-100 text-gray-900 font-serif",
           headerClass: "text-center bg-gradient-to-r from-gray-800 to-gray-700 py-4 px-6 rounded-lg text-white mb-3",
           headerBg: "",
           headerText: "text-white text-xl font-semibold",
-          sectionTitleClass: "text-sm font-bold text-amber-700 uppercase tracking-wider border-b-2 border-amber-400 pb-1 mb-2",
+          sectionTitleClass: "text-sm font-bold text-slate-800 uppercase tracking-wider border-b-2 border-sky-500 pb-1 mb-2",
           sectionBg: "",
-          cardClass: "bg-gradient-to-r from-white to-amber-50 border border-amber-200 p-2 mb-2",
+          cardClass: "bg-gradient-to-r from-white to-slate-100 border border-slate-300 p-2 mb-2",
           cardTitleClass: "font-semibold text-gray-800 text-sm",
-          cardSubtitleClass: "text-amber-600 text-xs font-medium uppercase tracking-wide",
+          cardSubtitleClass: "text-sky-700 text-xs font-medium uppercase tracking-wide",
           cardTextClass: "text-gray-700 text-xs",
-          badgeClass: "bg-amber-100 text-amber-800 border border-amber-300 rounded px-2 py-0.5 text-xs font-semibold",
-          dividerClass: "border-t border-amber-200 my-2",
+          badgeClass: "bg-sky-100 text-sky-800 border border-sky-300 rounded px-2 py-0.5 text-xs font-semibold",
+          dividerClass: "border-t border-slate-300 my-2",
           listClass: "list-disc pl-4 text-gray-700 text-xs",
-          linkClass: "text-amber-600 hover:text-amber-800 text-xs",
+          linkClass: "text-sky-700 hover:text-sky-800 text-xs",
           containerPadding: "p-4",
           sectionPadding: "pt-2"
         };
@@ -150,20 +132,20 @@ const Resume = ({ data, template = null }) => {
       case 6: // Academic Research - Teal & Formal
         return {
           name: "Academic Research",
-          containerClass: "bg-gradient-to-br from-white to-teal-50 text-gray-800 font-sans",
-          headerClass: "bg-gradient-to-r from-teal-700 to-teal-600 py-3 px-4 rounded-lg text-white mb-2 flex justify-between items-center",
+          containerClass: "bg-gradient-to-br from-white to-emerald-50 text-gray-800 font-sans",
+          headerClass: "bg-gradient-to-r from-emerald-700 to-emerald-600 py-3 px-4 rounded-lg text-white mb-2 flex justify-between items-center",
           headerBg: "",
           headerText: "text-white text-lg font-semibold",
-          sectionTitleClass: "text-sm font-bold text-teal-800 border-l-2 border-teal-500 pl-2 py-0.5 mb-2 bg-teal-50",
+          sectionTitleClass: "text-sm font-bold text-emerald-800 border-l-2 border-emerald-500 pl-2 py-0.5 mb-2 bg-emerald-50",
           sectionBg: "",
-          cardClass: "bg-white border border-teal-200 p-2 mb-2",
-          cardTitleClass: "font-semibold text-teal-800 text-sm",
-          cardSubtitleClass: "text-teal-600 text-xs font-medium",
+          cardClass: "bg-white border border-emerald-200 p-2 mb-2",
+          cardTitleClass: "font-semibold text-emerald-800 text-sm",
+          cardSubtitleClass: "text-emerald-600 text-xs font-medium",
           cardTextClass: "text-gray-700 text-xs",
-          badgeClass: "bg-teal-100 text-teal-800 border border-teal-300 rounded px-2 py-0.5 text-xs",
-          dividerClass: "border-t border-teal-200 my-2",
+          badgeClass: "bg-emerald-100 text-emerald-800 border border-emerald-300 rounded px-2 py-0.5 text-xs",
+          dividerClass: "border-t border-emerald-200 my-2",
           listClass: "list-disc pl-4 text-gray-700 text-xs",
-          linkClass: "text-teal-600 hover:text-teal-800 text-xs",
+          linkClass: "text-emerald-600 hover:text-emerald-800 text-xs",
           containerPadding: "p-4",
           sectionPadding: "pt-2"
         };
@@ -181,13 +163,12 @@ const Resume = ({ data, template = null }) => {
     <>
       {template && (
         <div className="text-center mb-3">
-          <span className="badge badge-primary text-xs px-3 py-1">
+          <span className="rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-700">
             {config.name}
           </span>
         </div>
       )}
       <div
-        ref={resumeRef}
         className={`max-w-[210mm] mx-auto shadow-lg ${config.containerPadding} space-y-3 ${config.containerClass}`}
         style={{ minHeight: 'auto' }}
       >
@@ -229,9 +210,9 @@ const Resume = ({ data, template = null }) => {
                 <FaGithub className="mr-1 text-xs" /> GitHub
               </a>
             )}
-            {data.personalInformation.linkedIn && (
+            {(data.personalInformation.linkedIn || data.personalInformation.linkedin) && (
               <a
-                href={data.personalInformation.linkedIn}
+                href={data.personalInformation.linkedIn || data.personalInformation.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`flex items-center ${config.linkClass}`}
@@ -301,7 +282,7 @@ const Resume = ({ data, template = null }) => {
                   <p className={config.cardSubtitleClass}>
                     {edu.university} {edu.location && `| ${edu.location}`}
                   </p>
-                  {edu.graduationYear && <p className="text-xs opacity-60">🎓 {edu.graduationYear}</p>}
+                  {edu.graduationYear && <p className="text-xs opacity-60">{edu.graduationYear}</p>}
                 </div>
               ))}
             </section>
@@ -350,7 +331,7 @@ const Resume = ({ data, template = null }) => {
                     )}
                   {proj.githubLink && (
                     <a href={proj.githubLink} target="_blank" rel="noopener noreferrer" className={config.linkClass}>
-                      🔗 Project
+                      Project Link
                     </a>
                   )}
                 </div>
@@ -388,13 +369,10 @@ const Resume = ({ data, template = null }) => {
         )}
       </div>
 
-      <section className="flex justify-center mt-4">
-        <button onClick={handleDownloadPdf} className="btn btn-primary btn-sm shadow">
-        Download PDF
-        </button>
-      </section>
+      
     </>
   );
 };
 
 export default Resume;
+

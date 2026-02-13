@@ -9,6 +9,8 @@ public interface ResumeService {
 
     Map<String, Object> generateResumeResponse(String userResumeDescription) throws IOException;
 
+    Map<String, Object> generateInterviewQuestionsBySkills(List<String> skills);
+
     Resume saveResume(Resume resume);
 
     List<Resume> getResumesByUserEmail(String userEmail);

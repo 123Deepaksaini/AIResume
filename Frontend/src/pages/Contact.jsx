@@ -1,93 +1,85 @@
 import React from "react";
+import { Link } from "react-router";
+import { FaEnvelope, FaGlobe, FaHeadset, FaArrowRight } from "react-icons/fa";
 
 function Contact() {
+  const quickLinks = [
+    { to: "/", label: "Home" },
+    { to: "/about", label: "About" },
+    { to: "/services", label: "Services" },
+    { to: "/interview-prep", label: "Interview Prep" },
+    { to: "/generate-resume", label: "Generate Resume" },
+  ];
+
   return (
-    <div className="min-h-screen bg-base-100">
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold text-center text-base-content mb-8">
-            Contact Us
+    <main className="home-surface min-h-screen text-slate-900">
+      <section className="mx-auto max-w-6xl px-6 pb-16 pt-14 md:px-10 md:pt-20">
+        <div className="reveal-up rounded-3xl border border-slate-200/70 bg-white/90 p-7 text-center shadow-xl backdrop-blur md:p-10">
+          <h1 className="text-4xl font-black md:text-5xl" style={{ fontFamily: '"Space Grotesk", "Segoe UI", sans-serif' }}>
+            Contact & Support
           </h1>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="card bg-base-200 shadow-lg">
-              <div className="card-body">
-                <h2 className="card-title text-primary">Get In Touch</h2>
-                <p className="text-base-content/70 mb-4">
-                  Have questions about our AI Resume Generator? We'd love to hear from you!
-                </p>
-
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div>
-                      <div className="font-semibold">Email</div>
-                      <div className="text-base-content/70">support@airesumegenerator.com</div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <div>
-                      <div className="font-semibold">Support</div>
-                      <div className="text-base-content/70">24/7 AI Support Available</div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <div>
-                      <div className="font-semibold">Website</div>
-                      <div className="text-base-content/70">www.airesumegenerator.com</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="card bg-base-200 shadow-lg">
-              <div className="card-body">
-                <h2 className="card-title text-primary">Quick Links</h2>
-
-                <div className="space-y-3">
-                  <a href="/" className="btn btn-ghost btn-sm justify-start w-full">
-                    Home
-                  </a>
-                  <a href="/about" className="btn btn-ghost btn-sm justify-start w-full">
-                    About
-                  </a>
-                  <a href="/services" className="btn btn-ghost btn-sm justify-start w-full">
-                    Services
-                  </a>
-                  <a href="/generate-resume" className="btn btn-primary btn-sm justify-start w-full">
-                    Generate Resume
-                  </a>
-                </div>
-
-                <div className="divider"></div>
-
-                <div className="text-center">
-                  <p className="text-base-content/70 text-sm">
-                    Ready to create your professional resume?
-                  </p>
-                  <a href="/generate-resume" className="btn btn-primary btn-sm mt-2">
-                    Start Now
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="text-center mt-12">
-            <div className="card bg-base-200 shadow-lg inline-block">
-              <div className="card-body text-center">
-                <h3 className="text-xl font-bold text-primary mb-2">AI Resume Generator</h3>
-                <p className="text-base-content/70">
-                  Powered by advanced AI technology to help you create professional resumes instantly.
-                </p>
-              </div>
-            </div>
-          </div>
+          <p className="mx-auto mt-4 max-w-3xl text-base leading-7 text-slate-600 md:text-lg">
+            Have product questions, feedback, or support requests? Reach out and we will help you quickly.
+          </p>
         </div>
-      </div>
-    </div>
+      </section>
+
+      <section className="mx-auto grid max-w-6xl gap-6 px-6 pb-16 md:grid-cols-2 md:px-10">
+        <article className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
+          <h2 className="text-2xl font-black text-slate-900" style={{ fontFamily: '"Space Grotesk", "Segoe UI", sans-serif' }}>
+            Get In Touch
+          </h2>
+          <div className="mt-6 space-y-4">
+            <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <FaEnvelope className="mt-1 text-sky-600" />
+              <div>
+                <p className="font-semibold text-slate-900">Email</p>
+                <p className="text-sm text-slate-600">support@airesumebuilder.com</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <FaHeadset className="mt-1 text-pink-600" />
+              <div>
+                <p className="font-semibold text-slate-900">Support</p>
+                <p className="text-sm text-slate-600">24x7 product and usage support</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <FaGlobe className="mt-1 text-emerald-600" />
+              <div>
+                <p className="font-semibold text-slate-900">Website</p>
+                <p className="text-sm text-slate-600">www.airesumebuilder.com</p>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
+          <h2 className="text-2xl font-black text-slate-900" style={{ fontFamily: '"Space Grotesk", "Segoe UI", sans-serif' }}>
+            Quick Navigation
+          </h2>
+          <div className="mt-6 space-y-2">
+            {quickLinks.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 hover:border-sky-400 hover:text-sky-700"
+              >
+                {item.label}
+                <FaArrowRight className="text-xs" />
+              </Link>
+            ))}
+          </div>
+
+          <div className="mt-7 rounded-xl border border-slate-200 bg-slate-900 p-5 text-white">
+            <p className="text-sm text-slate-200">Ready to create your next resume?</p>
+            <Link to="/generate-resume" className="btn mt-3 border-0 bg-sky-600 text-white hover:bg-sky-700">
+              Start Building
+            </Link>
+          </div>
+        </article>
+      </section>
+    </main>
   );
 }
 

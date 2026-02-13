@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
+import { FaArrowRight, FaChartLine, FaCheckCircle } from "react-icons/fa";
 
 function CareerInsights() {
   const [careerInfo, setCareerInfo] = useState({
@@ -7,7 +8,7 @@ function CareerInsights() {
     experience: "",
     skills: "",
     interests: "",
-    goals: ""
+    goals: "",
   });
   const [insights, setInsights] = useState(null);
   const [analyzing, setAnalyzing] = useState(false);
@@ -20,7 +21,7 @@ function CareerInsights() {
     { title: "UX Designer", salary: "$60K - $120K", growth: "Moderate", description: "Design user experiences" },
     { title: "Cloud Architect", salary: "$100K - $180K", growth: "Very High", description: "Design cloud solutions" },
     { title: "Security Engineer", salary: "$90K - $170K", growth: "Very High", description: "Protect systems and data" },
-    { title: "AI/ML Engineer", salary: "$100K - $200K", growth: "Very High", description: "Build AI solutions" }
+    { title: "AI/ML Engineer", salary: "$100K - $200K", growth: "Very High", description: "Build AI solutions" },
   ];
 
   const getInsights = () => {
@@ -35,19 +36,21 @@ function CareerInsights() {
       const userSkills = careerInfo.skills.toLowerCase();
       const matchingPaths = [];
 
-      // Match skills to career paths
-      careerPaths.forEach(path => {
+      careerPaths.forEach((path) => {
         const pathLower = path.title.toLowerCase();
         if (
-          userSkills.includes("javascript") || userSkills.includes("react") || userSkills.includes("node") ||
-          userSkills.includes("python") || userSkills.includes("java") ||
-          pathLower.includes("developer") || pathLower.includes("engineer")
+          userSkills.includes("javascript") ||
+          userSkills.includes("react") ||
+          userSkills.includes("node") ||
+          userSkills.includes("python") ||
+          userSkills.includes("java") ||
+          pathLower.includes("developer") ||
+          pathLower.includes("engineer")
         ) {
           matchingPaths.push(path);
         }
       });
 
-      // If no matches, add some default paths
       if (matchingPaths.length === 0) {
         matchingPaths.push(careerPaths[0], careerPaths[1], careerPaths[3]);
       }
@@ -58,192 +61,148 @@ function CareerInsights() {
           { trend: "AI/ML Skills", impact: "High Demand", growth: "+40%" },
           { trend: "Cloud Computing", impact: "Essential", growth: "+35%" },
           { trend: "Cybersecurity", impact: "Critical", growth: "+30%" },
-          { trend: "Remote Work", impact: "Standard", growth: "+25%" }
+          { trend: "Remote Work", impact: "Standard", growth: "+25%" },
         ],
         tips: [
           "Learn at least one cloud platform (AWS, Azure, or GCP)",
           "Build a portfolio with real projects",
           "Network with professionals in your target field",
           "Consider certifications for your chosen path",
-          "Stay updated with industry trends"
-        ]
+          "Stay updated with industry trends",
+        ],
       });
 
       setAnalyzing(false);
       toast.success("Career insights generated!");
-    }, 2000);
+    }, 1600);
   };
 
   return (
-    <div className="min-h-screen bg-base-100 py-8">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-base-content mb-2">
+    <main className="home-surface min-h-screen">
+      {/* Hero Section */}
+      <section className="mx-auto max-w-7xl px-6 pb-12 pt-14 md:px-10 md:pt-20">
+        <div className="reveal-up glass-card rounded-3xl p-7 text-center md:p-10">
+          <h1 className="text-4xl font-black md:text-5xl" style={{ fontFamily: '"Space Grotesk", "Inter", sans-serif' }}>
             Career Insights
           </h1>
-          <p className="text-base-content/70">
-            Get personalized career recommendations based on your skills
+          <p className="mx-auto mt-4 max-w-3xl text-base leading-7 text-slate-600 md:text-lg">
+            Analyze your profile and discover practical growth paths, demand trends, and action steps.
           </p>
         </div>
+      </section>
 
-        <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto mb-12">
-          {/* Input Form */}
-          <div className="card bg-base-200 shadow-lg">
-            <div className="card-body">
-              <h2 className="card-title mb-4">Your Information</h2>
-              
-              <div className="form-control mb-4">
-                <label className="label">
-                  <span className="label-text">Current Role</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g., Junior Developer"
-                  className="input input-bordered w-full"
-                  value={careerInfo.currentRole}
-                  onChange={(e) => setCareerInfo({...careerInfo, currentRole: e.target.value})}
-                />
-              </div>
-
-              <div className="form-control mb-4">
-                <label className="label">
-                  <span className="label-text">Years of Experience</span>
-                </label>
-                <select
-                  className="select select-bordered w-full"
-                  value={careerInfo.experience}
-                  onChange={(e) => setCareerInfo({...careerInfo, experience: e.target.value})}
-                >
-                  <option value="">Select experience</option>
-                  <option value="0-1">0-1 years</option>
-                  <option value="1-3">1-3 years</option>
-                  <option value="3-5">3-5 years</option>
-                  <option value="5-10">5-10 years</option>
-                  <option value="10+">10+ years</option>
-                </select>
-              </div>
-
-              <div className="form-control mb-4">
-                <label className="label">
-                  <span className="label-text">Your Skills</span>
-                </label>
-                <textarea
-                  placeholder="e.g., JavaScript, React, Python, SQL, AWS"
-                  className="textarea textarea-bordered w-full h-24"
-                  value={careerInfo.skills}
-                  onChange={(e) => setCareerInfo({...careerInfo, skills: e.target.value})}
-                ></textarea>
-              </div>
-
-              <button
-                onClick={getInsights}
-                disabled={analyzing}
-                className="btn btn-primary w-full"
-              >
-                {analyzing ? (
-                  <>
-                    <span className="loading loading-spinner loading-sm"></span>
-                    Analyzing...
-                  </>
-                ) : (
-                  "Get Career Insights"
-                )}
-              </button>
-            </div>
+      {/* Content Grid */}
+      <section className="mx-auto grid max-w-7xl gap-6 px-6 pb-12 md:grid-cols-2 md:px-10">
+        {/* Profile Form */}
+        <article className="card-premium">
+          <h2 className="text-2xl font-black text-slate-900" style={{ fontFamily: '"Space Grotesk", "Inter", sans-serif' }}>
+            Your Profile
+          </h2>
+          <div className="mt-5 space-y-4">
+            <input
+              type="text"
+              placeholder="Current Role"
+              className="input-premium"
+              value={careerInfo.currentRole}
+              onChange={(e) => setCareerInfo({ ...careerInfo, currentRole: e.target.value })}
+            />
+            <select
+              className="input-premium"
+              value={careerInfo.experience}
+              onChange={(e) => setCareerInfo({ ...careerInfo, experience: e.target.value })}
+            >
+              <option value="">Experience Level</option>
+              <option value="0-1">0-1 years</option>
+              <option value="1-3">1-3 years</option>
+              <option value="3-5">3-5 years</option>
+              <option value="5-10">5-10 years</option>
+              <option value="10+">10+ years</option>
+            </select>
+            <textarea
+              placeholder="Skills (comma separated)"
+              className="textarea-premium h-24"
+              value={careerInfo.skills}
+              onChange={(e) => setCareerInfo({ ...careerInfo, skills: e.target.value })}
+            ></textarea>
+            <button onClick={getInsights} disabled={analyzing} className="btn-primary w-full flex items-center justify-center gap-2">
+              {analyzing ? (
+                <>
+                  <span className="loading loading-spinner loading-sm"></span>
+                  Analyzing
+                </>
+              ) : (
+                <>
+                  Get Insights <FaArrowRight className="text-xs" />
+                </>
+              )}
+            </button>
           </div>
+        </article>
 
-          {/* Quick Stats */}
-          <div className="card bg-base-200 shadow-lg">
-            <div className="card-body">
-              <h2 className="card-title mb-4">Market Overview</h2>
-              
-              <div className="space-y-4">
-                {[
-                  { role: "Software Developer", demand: "Very High", avgSalary: "$85K" },
-                  { role: "Data Scientist", demand: "Very High", avgSalary: "$95K" },
-                  { role: "UX Designer", demand: "High", avgSalary: "$75K" },
-                  { role: "Product Manager", demand: "High", avgSalary: "$110K" },
-                  { role: "DevOps Engineer", demand: "High", avgSalary: "$90K" }
-                ].map((item, index) => (
-                  <div key={index} className="flex justify-between items-center p-3 bg-base-100 rounded-lg">
-                    <div>
-                      <p className="font-semibold">{item.role}</p>
-                      <p className="text-sm text-base-content/60">Demand: {item.demand}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold text-primary">{item.avgSalary}</p>
-                    </div>
-                  </div>
-                ))}
+        {/* Market Overview */}
+        <article className="card-premium">
+          <h2 className="flex items-center gap-2 text-2xl font-black text-slate-900" style={{ fontFamily: '"Space Grotesk", "Inter", sans-serif' }}>
+            <FaChartLine className="text-brand-600" /> Market Overview
+          </h2>
+          <div className="mt-5 space-y-3">
+            {[
+              { role: "Software Developer", demand: "Very High", avgSalary: "$85K" },
+              { role: "Data Scientist", demand: "Very High", avgSalary: "$95K" },
+              { role: "UX Designer", demand: "High", avgSalary: "$75K" },
+              { role: "Product Manager", demand: "High", avgSalary: "$110K" },
+              { role: "DevOps Engineer", demand: "High", avgSalary: "$90K" },
+            ].map((item) => (
+              <div key={item.role} className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                <p className="font-semibold text-slate-900">{item.role}</p>
+                <p className="text-sm text-slate-600">Demand: {item.demand}</p>
+                <p className="mt-1 text-sm font-bold text-emerald-700">Avg: {item.avgSalary}</p>
               </div>
-            </div>
+            ))}
           </div>
-        </div>
+        </article>
+      </section>
 
-        {/* Insights Results */}
-        {insights && (
-          <div className="max-w-5xl mx-auto">
-            {/* Recommended Career Paths */}
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-base-content mb-4">
-                Recommended Career Paths
-              </h2>
-              <div className="grid md:grid-cols-3 gap-4">
-                {insights.recommendedPaths.map((path, index) => (
-                  <div key={index} className="card bg-primary text-primary-content">
-                    <div className="card-body">
-                      <h3 className="card-title">{path.title}</h3>
-                      <p className="text-sm opacity-90">{path.description}</p>
-                      <div className="flex justify-between mt-2 text-sm">
-                        <span>{path.salary}</span>
-                        <span>{path.growth}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Market Trends */}
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-base-content mb-4">
-                Market Trends
-              </h2>
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {insights.marketTrends.map((trend, index) => (
-                  <div key={index} className="card bg-base-200 shadow">
-                    <div className="card-body text-center">
-                      <h3 className="font-bold">{trend.trend}</h3>
-                      <p className="text-sm text-base-content/70">{trend.impact}</p>
-                      <p className="text-lg font-bold text-success">{trend.growth}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Tips */}
+      {/* Insights Results */}
+      {insights && (
+        <section className="mx-auto max-w-7xl px-6 pb-20 md:px-10">
+          <div className="space-y-8">
+            {/* Recommended Paths */}
             <div>
-              <h2 className="text-2xl font-bold text-base-content mb-4">
-                Tips to Advance Your Career
-              </h2>
-              <div className="card bg-base-200 shadow-lg">
-                <div className="card-body">
-                  <ul className="space-y-2">
-                    {insights.tips.map((tip, index) => (
-                      <li key={index} className="flex items-center gap-2">
-                        <span className="text-primary">✓</span>
-                        {tip}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+              <h3 className="text-center text-2xl font-black text-slate-900" style={{ fontFamily: '"Space Grotesk", "Inter", sans-serif' }}>
+                Recommended Paths
+              </h3>
+              <div className="mt-4 grid gap-4 md:grid-cols-3">
+                {insights.recommendedPaths.map((path) => (
+                  <div key={path.title} className="card-premium card-premium-interactive">
+                    <p className="text-lg font-bold text-slate-900">{path.title}</p>
+                    <p className="mt-2 text-sm text-slate-600">{path.description}</p>
+                    <div className="mt-3 flex items-center justify-between text-sm">
+                      <span className="font-semibold text-brand-600">{path.salary}</span>
+                      <span className="badge-premium badge-brand">{path.growth}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
+
+            {/* Action Tips */}
+            <div className="card-premium">
+              <h3 className="text-center text-2xl font-black text-slate-900" style={{ fontFamily: '"Space Grotesk", "Inter", sans-serif' }}>
+                Action Tips
+              </h3>
+              <ul className="mt-4 space-y-2">
+                {insights.tips.map((tip) => (
+                  <li key={tip} className="flex items-start gap-2 text-sm text-slate-700">
+                    <FaCheckCircle className="mt-0.5 text-emerald-600 shrink-0" />
+                    {tip}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-        )}
-      </div>
-    </div>
+        </section>
+      )}
+    </main>
   );
 }
 
