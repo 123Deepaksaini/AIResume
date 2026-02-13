@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import { FaDownload, FaTrash } from "react-icons/fa";
@@ -27,6 +27,7 @@ function Navbar() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authMode, setAuthMode] = useState("login");
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const profileDropdownRef = useRef(null);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -70,6 +71,18 @@ function Navbar() {
     setShowProfileDropdown(false);
   }, [location.pathname]);
 
+  useEffect(() => {
+    if (!showProfileDropdown) return undefined;
+
+    const handleOutsideClick = (event) => {
+      if (!profileDropdownRef.current?.contains(event.target)) {
+        setShowProfileDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [showProfileDropdown]);
   const closeMobileDropdown = () => {
     setShowProfileDropdown(false);
     const active = document.activeElement;
@@ -375,7 +388,7 @@ function Navbar() {
 
         <div className="navbar-end">
           {isAuthenticated ? (
-            <div className="relative">
+            <div ref={profileDropdownRef} className="relative">
               <button className="flex items-center gap-2" onClick={() => setShowProfileDropdown(!showProfileDropdown)}>
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-600 text-sm font-bold text-white">
                   {user?.name?.charAt(0).toUpperCase()}
@@ -424,8 +437,6 @@ function Navbar() {
                   </div>
                 </div>
               )}
-
-              {showProfileDropdown && <div className="fixed inset-0 z-40" onClick={() => setShowProfileDropdown(false)}></div>}
             </div>
           ) : (
             <div className="flex items-center gap-2">
@@ -558,3 +569,9 @@ function Navbar() {
 }
 
 export default Navbar;
+
+
+
+
+
+
